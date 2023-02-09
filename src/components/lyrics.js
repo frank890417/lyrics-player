@@ -9,16 +9,32 @@ function Lyrics() {
     const [currentSong, setCurrentSong] = useState(0);
     const [currentLine, setCurrentLine] = useState(0);
     const [lines, setLines] = useState([]);
+    // let orders = ``
     useEffect(() => {
         const fetchLyrics = async () => {
             const res = await fetch("/lyrics.txt");
             const text = await res.text();
-            const songs = text.split(">").map((song) => {
+            let songs = text.split(">").map((song) => {
                 return {
                     title: song.split("\n")[0],
                     lyrics: song.split("\n").slice(1).filter((line) => line !== ""),
                 };
             }).filter((song) => song.lyrics.length > 0);
+
+
+            //update order align to orders string
+            // let order = orders.split("\n").map(str => str.trim())
+
+            // let newSongs = []
+            // for (let i = 0; i < order.length; i++) {
+            //     for (let j = 0; j < songs.length; j++) {
+            //         if (order[i] == songs[j].title) {
+            //             newSongs.push(songs[j])
+            //         }
+            //     }
+            // }
+            // songs = newSongs
+
 
             console.log(songs)
             setSongs(songs);
@@ -27,6 +43,7 @@ function Lyrics() {
         fetchLyrics();
 
         window.addEventListener("keydown", handleKeyPress);
+        window.addEventListener("click", handleClick);
     }, []);
 
     useEffect(() => {
@@ -42,9 +59,9 @@ function Lyrics() {
             nextLine();
         } else if (e.key === "ArrowLeft") {
             prevLine();
-        } else if (e.key === "a") {
+        } else if (e.key === "ArrowUp") {
             prevTrack();
-        } else if (e.key === "s") {
+        } else if (e.key === "ArrowDown") {
             nextTrack();
         }
     };
@@ -90,8 +107,8 @@ function Lyrics() {
         // Animate the lyrics text using GSAP
         gsap.fromTo("#lyrics span", {
             opacity: 0,
-            y: 10,
-            scale: 5
+            y: 50,
+            scale: 1
         }, {
             duration: 0.5,
             opacity: 1,
@@ -112,9 +129,9 @@ function Lyrics() {
 
     return (
         <div className={styles.appLyrics}>
-            <div id="lyrics" className={styles.lyrics} key={currentLine}>
+            <div id="lyrics" className={styles.lyrics} key={currentLine + currentSong * 100}>
                 {(lines[currentLine] || "").split("").map(letter => {
-                    return <span>{letter}</span>
+                    return <span>{letter == " " ? <span>&nbsp;</span> : letter} </span>
                 })}
                 {(lines[currentLine] || "").split("").length == 0 ? <span>_</span> : <span></span>}
             </div>
