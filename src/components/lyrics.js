@@ -15,11 +15,12 @@ function Lyrics() {
             const res = await fetch("/lyrics.txt");
             const text = await res.text();
             let songs = text.split(">").map((song) => {
+                let title = song.split("\n")[0].trim()
                 return {
-                    title: song.split("\n")[0],
-                    lyrics: song.split("\n").slice(1).filter((line) => line !== ""),
+                    title,
+                    lyrics: ["", title].concat(song.split("\n").slice(1).filter((line) => line !== "")),
                 };
-            }).filter((song) => song.lyrics.length > 0);
+            }).filter((song) => song.title.length > 0);
 
 
             //update order align to orders string
@@ -136,8 +137,8 @@ function Lyrics() {
 
 
     return (
-        <div className={styles.appLyrics}>
-            <div id="lyrics" className={styles.lyrics} key={currentLine + currentSong * 100}>
+        <div className={styles.appLyrics} key={currentSong}>
+            <div id="lyrics" className={styles.lyrics} key={currentLine}>
                 {(lines[currentLine] || "").split("").map(letter => {
                     return <span>{letter == " " ? <span>&nbsp;</span> : letter} </span>
                 })}
