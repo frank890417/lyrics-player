@@ -107,12 +107,20 @@ function Lyrics() {
         // Animate the lyrics text using GSAP
         gsap.fromTo("#lyrics span", {
             opacity: 0,
-            y: 50,
-            scale: 1
+            y: "random(-100, 100)",
+            x: "random(-100, 100)",
+            scale: 1.2,
+            rotate: 1,
+            filter: "blur(15px)",
+            // filter:
         }, {
-            duration: 0.5,
+            duration: "random(1.5,2.5)",
+            filter: "blur(0px)",
             opacity: 1,
+            x: 0,
             y: 0,
+            scale: 1,
+            rotate: 0,
             ease: "power3.out",
             stagger: 0.05,
             onComplete: () => {
@@ -133,7 +141,7 @@ function Lyrics() {
                 {(lines[currentLine] || "").split("").map(letter => {
                     return <span>{letter == " " ? <span>&nbsp;</span> : letter} </span>
                 })}
-                {(lines[currentLine] || "").split("").length == 0 ? <span>_</span> : <span></span>}
+                {(lines[currentLine] || "").split("").length == 0 ? <span></span> : <span></span>}
             </div>
             <h5 className={styles.title}> #{currentSong + 1} {songs[currentSong]?.title} </h5>
         </div>
