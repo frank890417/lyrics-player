@@ -33,10 +33,10 @@ export default function Home() {
         </div>
       </div> */}
 
-      {/* 
+
+      {/*        
       <div className={styles.center}>
-       
-        {/* <Image
+        <Image
           className={styles.logo}
           src="/next.svg"
           alt="Next.js Logo"
@@ -47,7 +47,7 @@ export default function Home() {
         <div className={styles.thirteen}>
           <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
         </div>  
-    </div> * /}
+    </div>  */}
 
       {/* <div className={styles.grid}>
         <a

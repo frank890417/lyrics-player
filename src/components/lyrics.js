@@ -53,7 +53,7 @@ function Lyrics() {
     }, [currentSong]);
 
     const handleClick = () => {
-        setCurrentLine((prevLine) => prevLine + 1);
+        nextLine()
     };
     const handleKeyPress = (e) => {
         if (e.key === "ArrowRight") {
