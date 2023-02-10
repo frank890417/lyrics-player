@@ -67,22 +67,44 @@ function Lyrics() {
         }
     };
 
-    const nextLine = () => {
-        setCurrentLine((prev) => {
-            if (prev + 1 === lines.length) {
-                return 0;
-            }
-            return prev + 1;
+    const fadeOutText = () => {
+        gsap.to("#lyrics span", {
+            overwrite: true,
+            opacity: 0,
+            y: "random(-100, 100)",
+            x: "random(-100, 100)",
+            scale: 1.2,
+            rotate: 1,
+            filter: "blur(15px)",
+            stagger: 0.01
         });
+    }
+
+    const nextLine = () => {
+        //fade out all the texts
+
+        fadeOutText()
+        setTimeout(() => {
+            setCurrentLine((prev) => {
+                if (prev + 1 === lines.length) {
+                    return 0;
+                }
+                return prev + 1;
+            });
+        }, 500)
     };
 
     const prevLine = () => {
-        setCurrentLine((prev) => {
-            if (prev === 0) {
-                return lines.length - 1;
-            }
-            return prev - 1;
-        });
+        fadeOutText()
+
+        setTimeout(() => {
+            setCurrentLine((prev) => {
+                if (prev === 0) {
+                    return lines.length - 1;
+                }
+                return prev - 1;
+            });
+        }, 500)
     };
 
     const nextTrack = () => {
