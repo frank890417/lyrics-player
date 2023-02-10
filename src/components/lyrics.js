@@ -145,7 +145,7 @@ function Lyrics() {
             scale: 1,
             rotate: 0,
             ease: "power3.out",
-            stagger: 0.2,
+            stagger: 0.1,
             onComplete: () => {
                 // gsap.to("#lyrics", {
                 //     duration: 0.5,
