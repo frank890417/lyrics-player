@@ -211,7 +211,7 @@ function Lyrics() {
                                         return (
                                             <>
                                                 {/* add space if it is not the first word */}
-                                                {index == 0 && currentLine != 1 && currentLine != 0 ? <span>&nbsp;</span> : <></>}
+                                                {index == 0 && currentLine != 0 ? <span>&nbsp;</span> : <></>}
 
                                                 <span
                                                     key={index}
@@ -231,11 +231,23 @@ function Lyrics() {
                     )}
                     {(lines[currentLine] || "").split("").length == 0 ? <span></span> : <span></span>}
                 </div>
-                <h5 className={styles.title}> #{currentSong + 1} {songs[currentSong]?.title}
+                <h5 className={styles.title}>
+                    {/* prev track */}
+                    {/* <span className={styles.prevTrack} onClick={prevTrack}>
+                        &lt;&lt;
+
+                    </span> */}
+
+                    #{currentSong + 1} {songs[currentSong]?.title}
                     {/* line number */}
                     <span className={styles.lineNumber}>
                         &nbsp;{currentLine + 1}/{lines.length}
                     </span>
+
+                    {/* next track */}
+                    {/* <span className={styles.nextTrack} onClick={nextTrack}>
+                        &gt;&gt;
+                    </span> */}
                 </h5>
             </div>
             <div className={styles.progressBar}
