@@ -3,6 +3,41 @@
 import React, { useState, useEffect } from "react";
 import gsap from "gsap";
 import styles from './lyrics.module.scss'
+import { io } from "socket.io-client";
+
+
+function receiveOsc(address, value) {
+    console.log("received OSC: " + address + ", " + value);
+
+    if (address == '/test') {
+        x = value[0];
+        y = value[1];
+    }
+}
+
+function sendOsc(address, value) {
+    socket.emit('message', [address].concat(value));
+}
+
+function setupOsc(oscPortIn, oscPortOut) {
+    var socket = io.connect('http://localhost:8081', { port: 8081, rememberTransport: false });
+    socket.on('connect', function () {
+        socket.emit('config', {
+            server: { port: oscPortIn, host: '127.0.0.1' },
+            client: { port: oscPortOut, host: '127.0.0.1' }
+        });
+    });
+    socket.on('message', function (msg) {
+        if (msg[0] == '#bundle') {
+            for (var i = 2; i < msg.length; i++) {
+                receiveOsc(msg[i][0], msg[i].splice(1));
+            }
+        } else {
+            receiveOsc(msg[0], msg.splice(1));
+        }
+    });
+}
+
 
 function Lyrics() {
     const [songs, setSongs] = useState([]);
@@ -50,12 +85,13 @@ function Lyrics() {
 
         //add wheel event to switch next line
         window.addEventListener("wheel", handleWheel)
+
+        setupOsc(7001, 3334);
         return () => {
             window.removeEventListener("keydown", handleKeyPress);
             window.removeEventListener("click", handleClick);
             window.removeEventListener("wheel", handleWheel)
         }
-
 
     }, []);
 
@@ -204,9 +240,9 @@ function Lyrics() {
                     {/* wrap letter into span to prevent line break */}
 
                     {(lines[currentLine] || "").split(" ").map(
-                        (word, index) => {
+                        (word, index1) => {
                             return (
-                                <span key={index}>
+                                <span key={index1}>
                                     {word.split("").map((letter, index) => {
                                         return (
                                             <>
