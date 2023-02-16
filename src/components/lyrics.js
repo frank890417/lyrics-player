@@ -9,6 +9,8 @@ function Lyrics() {
     const [currentSong, setCurrentSong] = useState(0);
     const [currentLine, setCurrentLine] = useState(0);
     const [lines, setLines] = useState([]);
+
+
     // let orders = ``
     useEffect(() => {
         const fetchLyrics = async () => {
@@ -45,6 +47,16 @@ function Lyrics() {
 
         window.addEventListener("keydown", handleKeyPress);
         window.addEventListener("click", handleClick);
+
+        //add wheel event to switch next line
+        window.addEventListener("wheel", handleWheel)
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+            window.removeEventListener("click", handleClick);
+            window.removeEventListener("wheel", handleWheel)
+        }
+
+
     }, []);
 
     useEffect(() => {
@@ -52,6 +64,14 @@ function Lyrics() {
         setCurrentLine(0);
     }, [currentSong]);
 
+    const handleWheel = (e) => {
+        //debounce
+        if (e.deltaY > 0) {
+            prevLine()
+        } else {
+            nextLine()
+        }
+    }
     const handleClick = () => {
         nextLine()
     };
@@ -137,7 +157,7 @@ function Lyrics() {
             filter: "blur(15px)",
             // filter:
         }, {
-            duration: "random(1.5,2.5)",
+            duration: "random(0.2,0.5)",
             filter: "blur(0px)",
             opacity: 1,
             x: 0,
@@ -145,7 +165,7 @@ function Lyrics() {
             scale: 1,
             rotate: 0,
             ease: "power3.out",
-            stagger: 0.1,
+            stagger: 0.03,
             onComplete: () => {
                 // gsap.to("#lyrics", {
                 //     duration: 0.5,
@@ -159,15 +179,75 @@ function Lyrics() {
 
 
     return (
-        <div className={styles.appLyrics} key={currentSong}>
-            <div id="lyrics" className={styles.lyrics} key={currentLine}>
-                {(lines[currentLine] || "").split("").map(letter => {
-                    return <span>{letter == " " ? <span>&nbsp;</span> : letter} </span>
+        <>
+            {/* <ul className={styles.songList} >
+                {songs.map((song, index) => {
+                    return (
+                        <li
+                            className={styles.song}
+                            key={index}
+                            onClick={() => {
+                                setCurrentSong(index);
+                            }}
+                        >
+                            {song.title}
+                        </li>
+                    );
                 })}
-                {(lines[currentLine] || "").split("").length == 0 ? <span></span> : <span></span>}
+            </ul> */}
+            <div className={styles.appLyrics} key={currentSong}>
+                <div id="lyrics" className={styles.lyrics} key={currentLine}
+                    style={{
+                        fontSize: currentLine == 1 ? "12rem" : "",
+                        fontWeight: currentLine == 1 ? 800 : 500
+                    }}>
+                    {/* wrap letter into span to prevent line break */}
+
+                    {(lines[currentLine] || "").split(" ").map(
+                        (word, index) => {
+                            return (
+                                <span key={index}>
+                                    {word.split("").map((letter, index) => {
+                                        return (
+                                            <>
+                                                {/* add space if it is not the first word */}
+                                                {index == 0 && currentLine != 1 && currentLine != 0 ? <span>&nbsp;</span> : <></>}
+
+                                                <span
+                                                    key={index}
+                                                    style={{
+                                                        display: "inline-block",
+                                                    }}
+                                                >
+                                                    {letter}
+                                                </span>
+                                            </>
+                                        );
+                                    })}
+                                    {" "}
+                                </span>
+                            );
+                        }
+                    )}
+                    {(lines[currentLine] || "").split("").length == 0 ? <span></span> : <span></span>}
+                </div>
+                <h5 className={styles.title}> #{currentSong + 1} {songs[currentSong]?.title}
+                    {/* line number */}
+                    <span className={styles.lineNumber}>
+                        &nbsp;{currentLine + 1}/{lines.length}
+                    </span>
+                </h5>
             </div>
-            <h5 className={styles.title}> #{currentSong + 1} {songs[currentSong]?.title} </h5>
-        </div>
+            <div className={styles.progressBar}
+                style={{
+                    width: `${(currentLine / lines.length) * 100}%`
+                }}
+
+            >
+
+
+            </div>
+        </>
 
     );
 };
