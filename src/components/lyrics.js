@@ -9,8 +9,54 @@ function Lyrics() {
     const [currentSong, setCurrentSong] = useState(0);
     const [currentLine, setCurrentLine] = useState(0);
     const [lines, setLines] = useState([]);
+    //if midi is initialized
+    const [isMidiInit, setIsMidiInit] = useState(false)
 
+    const initListenMidi = async () => {
 
+        function onMessage(event) {
+            console.log(event)
+
+            const [channel, number, value] = event.data;
+            console.log(channel, number, value)
+
+            if (channel == 144 && number == 64 && value == 127) {
+                prevLine()
+            }
+            if (channel == 144 && number == 65 && value == 127) {
+                nextLine()
+            }
+            if (channel == 144 && number == 96 && value == 127) {
+                prevTrack()
+            }
+            if (channel == 144 && number == 97 && value == 127) {
+                nextTrack()
+            }
+        }
+        // list event from midi inputs, index -1 is listening all inputs
+        function listenEvent(inputs, index = -1) {
+            // index = -1 means listen all midi inputs
+            inputs.forEach((input, i) => {
+                if (i === index || index < 0) {
+                    input.onmidimessage = onMessage;
+                } else {
+                    input.onmidimessage = null;
+                }
+            });
+        }
+        //listen to midi
+        const initMidi = async () => {
+            try {
+                const access = await navigator.requestMIDIAccess();
+                const inputs = [...access.inputs.values()];
+                console.log(inputs)
+                listenEvent(inputs);
+            } catch (e) {
+                alert(e);
+            }
+        };
+        initMidi()
+    }
     // let orders = ``
     useEffect(() => {
         const fetchLyrics = async () => {
@@ -50,10 +96,20 @@ function Lyrics() {
 
         //add wheel event to switch next line
         window.addEventListener("wheel", handleWheel)
+
+        if (!isMidiInit) {
+            setIsMidiInit(true)
+            initListenMidi()
+        }
+
+
+
+
         return () => {
             window.removeEventListener("keydown", handleKeyPress);
             window.removeEventListener("click", handleClick);
             window.removeEventListener("wheel", handleWheel)
+
         }
 
 
@@ -63,6 +119,7 @@ function Lyrics() {
         setLines(songs?.[currentSong]?.lyrics || []);
         setCurrentLine(0);
     }, [currentSong]);
+
 
     const handleWheel = (e) => {
         //debounce
